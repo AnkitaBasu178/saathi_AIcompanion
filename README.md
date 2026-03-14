@@ -189,22 +189,4 @@ mobile app deployment for broader accessibility
 Demo
 ![MainInterface](Interface/MainInterface.jpeg)
 
-
-Example:
-
-
-Contributors
-
-Add your team members here.
-
-Example:
-
-Your Name
-
-Teammate Name
-
-Teammate Name
-
-License
-
 This project was developed for the Code for Her Hackathon 2026.
