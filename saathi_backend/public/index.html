@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SAATHI — Your Safety Companion</title>
+    <meta name="description"
+        content="SAATHI — AI-powered multilingual safety and life companion for women. Speak in English, Hindi, Telugu, or Rajasthani.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a2e;
+            --bg-card-hover: #1f1f35;
+            --accent: #7c3aed;
+            --accent-glow: rgba(124, 58, 237, 0.3);
+            --accent-soft: #a78bfa;
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.3);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: rgba(148, 163, 184, 0.1);
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ── Header ────────────────────────────────────────── */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+            gap: 10px;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-brand .logo {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent), #ec4899);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .header-brand h1 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-soft), #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-brand .subtitle {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ── Language Selector ──────────────────────────────── */
+        .lang-selector {
+            position: relative;
+        }
+
+        .lang-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text-primary);
+            font-size: 12px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .lang-btn:hover {
+            border-color: var(--accent);
+        }
+
+        .lang-dropdown {
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            z-index: 100;
+            min-width: 160px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            display: none;
+            animation: dropIn 0.2s ease;
+        }
+
+        .lang-dropdown.open {
+            display: block;
+        }
+
+        @keyframes dropIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .lang-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: background 0.15s;
+            border: none;
+            background: none;
+            width: 100%;
+            font-family: inherit;
+            text-align: left;
+        }
+
+        .lang-option:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .lang-option.active {
+            color: var(--accent-soft);
+        }
+
+        .lang-option .native {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 20px;
+            font-size: 11px;
+            color: var(--success);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        /* ── Chat Area ─────────────────────────────────────── */
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-area::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-area::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 2px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 14px 18px;
+            border-radius: var(--radius);
+            animation: messageIn 0.3s ease;
+            line-height: 1.7;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+
+        @keyframes messageIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--accent), #6d28d9);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.assistant {
+            align-self: flex-start;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message .meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            font-size: 11px;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+
+        .message.user .meta {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .message .scenario-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(124, 58, 237, 0.2);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 10px;
+            font-size: 10px;
+            color: var(--accent-soft);
+        }
+
+        .message .risk-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .risk-green {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .risk-yellow {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .risk-red {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .lang-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(124, 58, 237, 0.1);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            border-radius: 10px;
+            font-size: 10px;
+            color: var(--accent-soft);
+        }
+
+        /* ── Action Buttons ─────────────────────────────────── */
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .action-btn {
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 12px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent);
+        }
+
+        .action-btn.emergency {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .action-btn.emergency:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* ── Steps ──────────────────────────────────────────── */
+        .steps-list {
+            list-style: none;
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .steps-list li {
+            padding: 10px 14px;
+            background: rgba(124, 58, 237, 0.06);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* ── Thinking ───────────────────────────────────────── */
+        .thinking {
+            align-self: flex-start;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 18px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            color: var(--text-secondary);
+            animation: messageIn 0.3s ease;
+        }
+
+        .thinking-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .thinking-dots span {
+            width: 6px;
+            height: 6px;
+            background: var(--accent-soft);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite;
+        }
+
+        .thinking-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .thinking-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-8px);
+            }
+        }
+
+        /* ── Voice Controls ────────────────────────────────── */
+        .voice-controls {
+            flex-shrink: 0;
+            padding: 14px 20px 22px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .voice-status {
+            font-size: 13px;
+            color: var(--text-secondary);
+            height: 20px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .voice-status.listening {
+            color: var(--danger);
+        }
+
+        .voice-status.thinking {
+            color: var(--accent-soft);
+        }
+
+        .voice-status.speaking {
+            color: var(--success);
+        }
+
+        .controls-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .mic-btn {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, var(--accent), #6d28d9);
+            color: white;
+            font-size: 26px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px var(--accent-glow);
+            position: relative;
+        }
+
+        .mic-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 30px var(--accent-glow);
+        }
+
+        .mic-btn:active {
+            transform: scale(0.95);
+        }
+
+        .mic-btn.listening {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            box-shadow: 0 4px 30px var(--danger-glow);
+            animation: pulse-mic 1.5s infinite;
+        }
+
+        .mic-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        @keyframes pulse-mic {
+
+            0%,
+            100% {
+                box-shadow: 0 4px 20px var(--danger-glow);
+            }
+
+            50% {
+                box-shadow: 0 4px 40px var(--danger-glow), 0 0 60px var(--danger-glow);
+            }
+        }
+
+        .mic-btn.listening::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid var(--danger);
+            animation: ring-expand 1.5s infinite;
+        }
+
+        @keyframes ring-expand {
+            0% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .secondary-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 17px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .secondary-btn:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        /* ── Text input ────────────────────────────────────── */
+        .text-input-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .text-input {
+            flex: 1;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .text-input:focus {
+            border-color: var(--accent);
+        }
+
+        .send-btn {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, var(--accent), #6d28d9);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .send-btn:hover {
+            opacity: 0.9;
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ── Waveform ───────────────────────────────────────── */
+        .waveform {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            height: 24px;
+        }
+
+        .waveform .bar {
+            width: 3px;
+            background: var(--success);
+            border-radius: 2px;
+            animation: wave 1s ease-in-out infinite;
+        }
+
+        .waveform .bar:nth-child(1) {
+            animation-delay: 0s;
+            height: 8px;
+        }
+
+        .waveform .bar:nth-child(2) {
+            animation-delay: 0.1s;
+            height: 16px;
+        }
+
+        .waveform .bar:nth-child(3) {
+            animation-delay: 0.2s;
+            height: 24px;
+        }
+
+        .waveform .bar:nth-child(4) {
+            animation-delay: 0.3s;
+            height: 16px;
+        }
+
+        .waveform .bar:nth-child(5) {
+            animation-delay: 0.4s;
+            height: 8px;
+        }
+
+        .waveform .bar:nth-child(6) {
+            animation-delay: 0.1s;
+            height: 20px;
+        }
+
+        .waveform .bar:nth-child(7) {
+            animation-delay: 0.3s;
+            height: 12px;
+        }
+
+        @keyframes wave {
+
+            0%,
+            100% {
+                transform: scaleY(0.4);
+            }
+
+            50% {
+                transform: scaleY(1);
+            }
+        }
+
+        /* ── Welcome ────────────────────────────────────────── */
+        .welcome-card {
+            text-align: center;
+            padding: 36px 24px;
+            animation: messageIn 0.5s ease;
+        }
+
+        .welcome-card .emoji {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .welcome-card h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--accent-soft), #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .welcome-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 440px;
+            margin: 0 auto;
+        }
+
+        .welcome-card .lang-pills {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .welcome-card .lang-pill {
+            padding: 6px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .welcome-card .lang-pill:hover,
+        .welcome-card .lang-pill.active {
+            border-color: var(--accent);
+            color: var(--accent-soft);
+        }
+
+        /* ── Emergency banner ──────────────────────────────── */
+        .emergency-banner {
+            padding: 10px 14px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--radius-sm);
+            color: #f87171;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: messageIn 0.3s ease;
+        }
+
+        /* ── SOS Button ────────────────────────────────────── */
+        .sos-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            border: 1px solid var(--danger);
+            border-radius: 20px;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+            animation: pulse-sos 2s infinite;
+        }
+
+        .sos-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px var(--danger-glow);
+        }
+
+        @keyframes pulse-sos {
+
+            0%,
+            100% {
+                box-shadow: 0 2px 10px var(--danger-glow);
+            }
+
+            50% {
+                box-shadow: 0 2px 20px var(--danger-glow);
+            }
+        }
+
+        /* ── SOS Panel Overlay ──────────────────────────────── */
+        .sos-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            animation: fadeIn 0.2s ease;
+            overflow-y: auto;
+        }
+
+        .sos-overlay.open {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .sos-panel {
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .sos-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sos-header h2 {
+            font-size: 20px;
+            color: var(--danger);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sos-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sos-close:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .sos-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+        }
+
+        .sos-section h3 {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sos-call-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 8px;
+        }
+
+        .sos-call-btn:last-child {
+            margin-bottom: 0;
+        }
+
+        .sos-call-btn:hover {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .sos-call-btn .call-icon {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--danger);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .sos-call-btn.emergency-primary {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .sos-location {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: rgba(16, 185, 129, 0.06);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .sos-location .loc-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse-dot 2s infinite;
+        }
+
+        /* ── Contact Form ──────────────────────────────────── */
+        .contact-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+        }
+
+        .contact-item .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .contact-item .contact-name {
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .contact-item .contact-phone {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .contact-item .contact-rel {
+            font-size: 10px;
+            color: var(--accent-soft);
+        }
+
+        .contact-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .contact-call-btn,
+        .contact-del-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.15s;
+        }
+
+        .contact-call-btn:hover {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .contact-del-btn:hover {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .add-contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .add-contact-form input {
+            padding: 10px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .add-contact-form input:focus {
+            border-color: var(--accent);
+        }
+
+        .add-contact-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .add-contact-btn {
+            padding: 10px 16px;
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        .add-contact-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* ── Responsive ────────────────────────────────────── */
+        @media (max-width: 480px) {
+            .message {
+                max-width: 92%;
+                font-size: 13px;
+            }
+
+            .header-brand h1 {
+                font-size: 17px;
+            }
+
+            .mic-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 22px;
+            }
+
+            .header {
+                padding: 10px 12px;
+            }
+
+            .status-badge span {
+                display: none;
+            }
+
+            .sos-btn span {
+                display: none;
+            }
+
+            .sos-panel {
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-brand">
+            <div class="logo">🛡️</div>
+            <div>
+                <h1>SAATHI</h1>
+                <div class="subtitle">Your Safety Companion</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="sos-btn" id="sosBtn" title="Emergency SOS">
+                🚨 <span>SOS</span>
+            </button>
+            <div class="lang-selector">
+                <button class="lang-btn" id="langBtn" title="Change language">
+                    🌐 <span id="langLabel">English</span>
+                </button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <button class="lang-option active" data-lang="en-IN" data-stt="en-IN" data-label="English">
+                        English <span class="native">English</span>
+                    </button>
+                    <button class="lang-option" data-lang="hi-IN" data-stt="hi-IN" data-label="हिंदी">
+                        Hindi <span class="native">हिंदी</span>
+                    </button>
+                    <button class="lang-option" data-lang="te-IN" data-stt="te-IN" data-label="తెలుగు">
+                        Telugu <span class="native">తెలుగు</span>
+                    </button>
+                    <button class="lang-option" data-lang="raj-IN" data-stt="hi-IN" data-label="राजस्थानी">
+                        Rajasthani <span class="native">राजस्थानी</span>
+                    </button>
+                </div>
+            </div>
+            <div class="status-badge" id="connectionStatus">
+                <div class="status-dot"></div>
+                <span>Connected</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Chat Area -->
+    <div class="chat-area" id="chatArea">
+        <div class="welcome-card">
+            <div class="emoji">🛡️</div>
+            <h2>Hello, I'm SAATHI</h2>
+            <p>I'm here to listen, understand, and guide you — with complete privacy. Speak or type in your preferred
+                language.</p>
+            <div class="lang-pills">
+                <span class="lang-pill active" data-lang="en-IN">English</span>
+                <span class="lang-pill" data-lang="hi-IN">हिंदी</span>
+                <span class="lang-pill" data-lang="te-IN">తెలుగు</span>
+                <span class="lang-pill" data-lang="raj-IN">राजस्थानी</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Controls -->
+    <div class="voice-controls">
+        <div class="voice-status" id="voiceStatus">Tap the mic to start speaking</div>
+        <div class="controls-row">
+            <button class="secondary-btn" id="stopAudioBtn" title="Stop audio" style="display:none;">⏹</button>
+            <button class="mic-btn" id="micBtn" title="Press to speak">🎙️</button>
+            <button class="secondary-btn" id="toggleTextBtn" title="Type instead">⌨️</button>
+        </div>
+        <div class="text-input-row" id="textInputRow" style="display: none;">
+            <input class="text-input" id="textInput" type="text" placeholder="Type your message..." maxlength="2000"
+                autocomplete="off">
+            <button class="send-btn" id="sendBtn">Send</button>
+        </div>
+    </div>
+
+    <!-- SOS Emergency Overlay -->
+    <div class="sos-overlay" id="sosOverlay">
+        <div class="sos-panel">
+            <div class="sos-header">
+                <h2>🚨 Emergency SOS</h2>
+                <button class="sos-close" id="sosClose" title="Close">✕</button>
+            </div>
+
+            <div class="sos-location" id="sosLocation">
+                <div class="loc-dot"></div>
+                <span>Detecting your location…</span>
+            </div>
+
+            <div class="sos-section">
+                <h3>📞 Emergency Helplines</h3>
+                <button class="sos-call-btn emergency-primary" onclick="window.open('tel:100','_self')">
+                    <span>🚔 Police</span>
+                    <span class="call-icon">📱 100</span>
+                </button>
+                <button class="sos-call-btn emergency-primary" onclick="window.open('tel:181','_self')">
+                    <span>🛡️ Women Helpline</span>
+                    <span class="call-icon">📱 181</span>
+                </button>
+                <button class="sos-call-btn" onclick="window.open('tel:108','_self')">
+                    <span>🏥 Ambulance</span>
+                    <span class="call-icon">📱 108</span>
+                </button>
+                <button class="sos-call-btn" onclick="window.open('tel:112','_self')">
+                    <span>🆘 Emergency (All)</span>
+                    <span class="call-icon">📱 112</span>
+                </button>
+                <button class="sos-call-btn" onclick="window.open('tel:7827170170','_self')">
+                    <span>👩 NCW Helpline</span>
+                    <span class="call-icon">📱 7827170170</span>
+                </button>
+            </div>
+
+            <div class="sos-section" id="nearbySection" style="display:none;">
+                <h3>📍 Nearby Support</h3>
+                <div id="nearbyServices"></div>
+            </div>
+
+            <div class="sos-section">
+                <h3>👨‍👩‍👧 Trusted Contacts</h3>
+                <div id="trustedContacts"></div>
+                <div class="add-contact-form" id="addContactForm">
+                    <div class="add-contact-row">
+                        <input type="text" id="contactName" placeholder="Name" style="flex:1">
+                        <input type="text" id="contactPhone" placeholder="Phone" style="flex:1">
+                    </div>
+                    <div class="add-contact-row">
+                        <input type="text" id="contactRelation" placeholder="Relationship (optional)" style="flex:1">
+                        <button class="add-contact-btn" id="addContactBtn">+ Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── Language Config ────────────────────────────────────────────────
+        const LANGUAGES = {
+            'en-IN': { label: 'English', sttCode: 'en-IN', nativeLabel: 'English' },
+            'hi-IN': { label: 'हिंदी', sttCode: 'hi-IN', nativeLabel: 'हिंदी' },
+            'te-IN': { label: 'తెలుగు', sttCode: 'te-IN', nativeLabel: 'తెలుగు' },
+            'raj-IN': { label: 'राजस्थानी', sttCode: 'hi-IN', nativeLabel: 'राजस्थानी' },
+        };
+
+        // ── State ──────────────────────────────────────────────────────────
+        const STATE = {
+            ws: null,
+            sessionId: null,
+            language: 'en-IN',
+            isListening: false,
+            isProcessing: false,
+            isSpeaking: false,
+            recognition: null,
+            currentAudio: null,
+            voiceEnabled: true,
+        };
+
+        // ── DOM ─────────────────────────────────────────────────────────────
+        const chatArea = document.getElementById('chatArea');
+        const micBtn = document.getElementById('micBtn');
+        const voiceStatus = document.getElementById('voiceStatus');
+        const textInput = document.getElementById('textInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const textInputRow = document.getElementById('textInputRow');
+        const toggleTextBtn = document.getElementById('toggleTextBtn');
+        const stopAudioBtn = document.getElementById('stopAudioBtn');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const langBtn = document.getElementById('langBtn');
+        const langDropdown = document.getElementById('langDropdown');
+        const langLabel = document.getElementById('langLabel');
+
+        // ── Language Selector ──────────────────────────────────────────────
+        langBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            langDropdown.classList.toggle('open');
+        });
+
+        document.addEventListener('click', () => langDropdown.classList.remove('open'));
+
+        document.querySelectorAll('.lang-option').forEach((opt) => {
+            opt.addEventListener('click', () => {
+                const lang = opt.dataset.lang;
+                setLanguage(lang);
+                langDropdown.classList.remove('open');
+            });
+        });
+
+        document.querySelectorAll('.lang-pill').forEach((pill) => {
+            pill.addEventListener('click', () => setLanguage(pill.dataset.lang));
+        });
+
+        function setLanguage(langCode) {
+            STATE.language = langCode;
+            const langConfig = LANGUAGES[langCode];
+
+            // Update header button
+            langLabel.textContent = langConfig.label;
+
+            // Update dropdown active state
+            document.querySelectorAll('.lang-option').forEach((opt) => {
+                opt.classList.toggle('active', opt.dataset.lang === langCode);
+            });
+
+            // Update welcome pills
+            document.querySelectorAll('.lang-pill').forEach((pill) => {
+                pill.classList.toggle('active', pill.dataset.lang === langCode);
+            });
+
+            // Update STT language
+            if (STATE.recognition) {
+                STATE.recognition.lang = langConfig.sttCode;
+            }
+
+            console.log(`[LANG] Switched to ${langCode} (STT: ${langConfig.sttCode})`);
+        }
+
+        // ── WebSocket ──────────────────────────────────────────────────────
+        function connectWebSocket() {
+            const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+            STATE.ws = new WebSocket(`${protocol}://${location.host}/ws`);
+
+            STATE.ws.onopen = () => {
+                updateConnectionStatus(true);
+            };
+
+            STATE.ws.onmessage = (event) => {
+                try {
+                    handleWSMessage(JSON.parse(event.data));
+                } catch (e) {
+                    console.error('[WS] Parse error:', e);
+                }
+            };
+
+            STATE.ws.onclose = () => {
+                updateConnectionStatus(false);
+                setTimeout(connectWebSocket, 3000);
+            };
+
+            STATE.ws.onerror = () => { };
+        }
+
+        function wsSend(event, data) {
+            if (STATE.ws?.readyState === WebSocket.OPEN) {
+                STATE.ws.send(JSON.stringify({ event, data }));
+            }
+        }
+
+        function updateConnectionStatus(connected) {
+            const dot = connectionStatus.querySelector('.status-dot');
+            const text = connectionStatus.querySelector('span');
+            if (connected) {
+                dot.style.background = 'var(--success)';
+                text.textContent = 'Connected';
+                connectionStatus.style.color = 'var(--success)';
+            } else {
+                dot.style.background = 'var(--danger)';
+                text.textContent = 'Reconnecting...';
+                connectionStatus.style.color = 'var(--danger)';
+            }
+        }
+
+        // ── WS Message Handler ────────────────────────────────────────────
+        function handleWSMessage(msg) {
+            switch (msg.event) {
+                case 'connected':
+                    STATE.sessionId = msg.data.sessionId;
+                    break;
+                case 'chat:typing':
+                    msg.data.isTyping ? showThinking() : removeThinking();
+                    break;
+                case 'chat:response':
+                    removeThinking();
+                    STATE.isProcessing = false;
+                    displayResponse(msg.data);
+                    break;
+                case 'error':
+                    removeThinking();
+                    STATE.isProcessing = false;
+                    setVoiceStatus('Something went wrong. Try again.', '');
+                    updateMicState();
+                    break;
+            }
+        }
+
+        // ── Speech Recognition ────────────────────────────────────────────
+        function initSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                STATE.voiceEnabled = false;
+                setVoiceStatus('Voice not supported. Use text input.', '');
+                textInputRow.style.display = 'flex';
+                micBtn.classList.add('disabled');
+                return;
+            }
+
+            STATE.recognition = new SpeechRecognition();
+            STATE.recognition.continuous = false;
+            STATE.recognition.interimResults = false;
+            STATE.recognition.lang = LANGUAGES[STATE.language].sttCode;
+            STATE.recognition.maxAlternatives = 1;
+
+            STATE.recognition.onstart = () => {
+                STATE.isListening = true;
+                micBtn.classList.add('listening');
+                setVoiceStatus('Listening...', 'listening');
+            };
+
+            STATE.recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                if (transcript.trim()) {
+                    sendMessage(transcript.trim());
+                }
+            };
+
+            STATE.recognition.onerror = (event) => {
+                STATE.isListening = false;
+                micBtn.classList.remove('listening');
+                if (event.error === 'not-allowed') {
+                    setVoiceStatus('Microphone blocked. Allow access or type below.', '');
+                    textInputRow.style.display = 'flex';
+                } else if (event.error === 'no-speech') {
+                    setVoiceStatus('No speech detected. Tap the mic to try again.', '');
+                } else {
+                    setVoiceStatus('Could not hear you. Try again.', '');
+                }
+                updateMicState();
+            };
+
+            STATE.recognition.onend = () => {
+                STATE.isListening = false;
+                micBtn.classList.remove('listening');
+                if (!STATE.isProcessing) updateMicState();
+            };
+        }
+
+        function startListening() {
+            if (!STATE.voiceEnabled || STATE.isProcessing || STATE.isListening) return;
+            stopAudio();
+
+            // Update STT language before starting
+            STATE.recognition.lang = LANGUAGES[STATE.language].sttCode;
+
+            try {
+                STATE.recognition.start();
+            } catch (e) {
+                console.error('[STT] Start error:', e);
+            }
+        }
+
+        function stopListening() {
+            if (STATE.recognition && STATE.isListening) STATE.recognition.stop();
+        }
+
+        // ── Send Message ──────────────────────────────────────────────────
+        function sendMessage(text) {
+            if (!text || STATE.isProcessing) return;
+
+            STATE.isProcessing = true;
+            addMessage(text, 'user');
+            setVoiceStatus('SAATHI is thinking...', 'thinking');
+            updateMicState();
+
+            wsSend('chat:message', {
+                message: text,
+                language: STATE.language,
+            });
+        }
+
+        // ── Display Response ──────────────────────────────────────────────
+        async function displayResponse(data) {
+            const msgEl = addMessage(data.message, 'assistant', data);
+
+            if (data.steps?.length > 0) {
+                const stepsList = document.createElement('ol');
+                stepsList.className = 'steps-list';
+                data.steps.forEach((step) => {
+                    const li = document.createElement('li');
+                    // Support both {title, description} objects and plain strings
+                    li.textContent = typeof step === 'object' ? step.description || step.title || '' : step;
+                    stepsList.appendChild(li);
+                });
+                msgEl.appendChild(stepsList);
+            }
+
+            if (data.buttons?.length > 0) {
+                const btnContainer = document.createElement('div');
+                btnContainer.className = 'action-buttons';
+                data.buttons.forEach((btn) => {
+                    const button = document.createElement('button');
+                    const phoneNum = btn.phone || btn.number;
+                    button.className = 'action-btn' + (btn.action === 'call' && ['100', '181', '112'].includes(phoneNum) ? ' emergency' : '');
+                    button.textContent = btn.label;
+                    button.onclick = () => handleActionButton(btn);
+                    btnContainer.appendChild(button);
+                });
+                msgEl.appendChild(btnContainer);
+            }
+
+            // Auto-open SOS panel on red risk
+            if (data.risk_level === 'red') {
+                setTimeout(() => openSOS(), 500);
+            }
+
+            if (data.emergency) {
+                const banner = document.createElement('div');
+                banner.className = 'emergency-banner';
+                banner.innerHTML = '🚨 Emergency services alerted. Helplines above.';
+                msgEl.appendChild(banner);
+            }
+
+            scrollToBottom();
+            await speakResponse(data.message, data.language || STATE.language);
+        }
+
+        // ── TTS ───────────────────────────────────────────────────────────
+        async function speakResponse(text, language) {
+            if (!text) return;
+
+            STATE.isSpeaking = true;
+            stopAudioBtn.style.display = 'flex';
+
+            voiceStatus.innerHTML = '<div class="waveform">' +
+                '<div class="bar"></div><div class="bar"></div><div class="bar"></div>' +
+                '<div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>' +
+                '</div><span>SAATHI is speaking…</span>';
+            voiceStatus.className = 'voice-status speaking';
+
+            try {
+                const response = await fetch('/api/voice/tts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, language: language || STATE.language }),
+                });
+
+                if (!response.ok) throw new Error(`TTS ${response.status}`);
+
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+
+                STATE.currentAudio = new Audio(audioUrl);
+
+                STATE.currentAudio.onended = () => {
+                    STATE.isSpeaking = false;
+                    stopAudioBtn.style.display = 'none';
+                    URL.revokeObjectURL(audioUrl);
+                    setVoiceStatus('Tap the mic to continue', '');
+                    updateMicState();
+                };
+
+                STATE.currentAudio.onerror = () => {
+                    STATE.isSpeaking = false;
+                    stopAudioBtn.style.display = 'none';
+                    setVoiceStatus('Audio failed. Response displayed above.', '');
+                    updateMicState();
+                };
+
+                await STATE.currentAudio.play();
+            } catch (err) {
+                console.error('[TTS] Error:', err);
+                STATE.isSpeaking = false;
+                stopAudioBtn.style.display = 'none';
+                setVoiceStatus('Audio unavailable. Response above.', '');
+                updateMicState();
+            }
+        }
+
+        function stopAudio() {
+            if (STATE.currentAudio) {
+                STATE.currentAudio.pause();
+                STATE.currentAudio.currentTime = 0;
+                STATE.currentAudio = null;
+            }
+            STATE.isSpeaking = false;
+            stopAudioBtn.style.display = 'none';
+        }
+
+        // ── UI Helpers ────────────────────────────────────────────────────
+        function addMessage(text, role, data = null) {
+            const welcome = chatArea.querySelector('.welcome-card');
+            if (welcome) welcome.remove();
+
+            const div = document.createElement('div');
+            div.className = `message ${role}`;
+
+            const content = document.createElement('div');
+            content.textContent = text;
+            div.appendChild(content);
+
+            if (data && role === 'assistant') {
+                const meta = document.createElement('div');
+                meta.className = 'meta';
+
+                if (data.language && LANGUAGES[data.language]) {
+                    const lb = document.createElement('span');
+                    lb.className = 'lang-badge';
+                    lb.textContent = LANGUAGES[data.language].label;
+                    meta.appendChild(lb);
+                }
+
+                if (data.scenario) {
+                    const badge = document.createElement('span');
+                    badge.className = 'scenario-badge';
+                    badge.textContent = data.scenario.replace(/_/g, ' ');
+                    meta.appendChild(badge);
+                }
+
+                if (data.risk_level) {
+                    const risk = document.createElement('span');
+                    risk.className = `risk-badge risk-${data.risk_level}`;
+                    risk.textContent = data.risk_level.toUpperCase();
+                    meta.appendChild(risk);
+                }
+
+                const time = document.createElement('span');
+                time.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                meta.appendChild(time);
+                div.appendChild(meta);
+            } else if (role === 'user') {
+                const meta = document.createElement('div');
+                meta.className = 'meta';
+                const time = document.createElement('span');
+                time.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                meta.appendChild(time);
+                div.appendChild(meta);
+            }
+
+            chatArea.appendChild(div);
+            scrollToBottom();
+            return div;
+        }
+
+        function showThinking() {
+            if (document.querySelector('.thinking')) return;
+            const div = document.createElement('div');
+            div.className = 'thinking';
+            div.innerHTML = '<div class="thinking-dots"><span></span><span></span><span></span></div> SAATHI is thinking…';
+            chatArea.appendChild(div);
+            scrollToBottom();
+        }
+
+        function removeThinking() {
+            const el = document.querySelector('.thinking');
+            if (el) el.remove();
+        }
+
+        function scrollToBottom() {
+            requestAnimationFrame(() => { chatArea.scrollTop = chatArea.scrollHeight; });
+        }
+
+        function setVoiceStatus(text, state) {
+            if (text) voiceStatus.textContent = text;
+            voiceStatus.className = 'voice-status' + (state ? ` ${state}` : '');
+        }
+
+        function updateMicState() {
+            micBtn.classList.toggle('disabled', STATE.isProcessing || STATE.isSpeaking);
+        }
+
+        function handleActionButton(btn) {
+            const phoneNum = btn.phone || btn.number;
+            if (btn.action === 'call' && phoneNum) {
+                window.open(`tel:${phoneNum}`, '_self');
+            } else if (btn.action === 'search_support') {
+                sendMessage(`Find nearby ${btn.type || 'support'}`);
+            } else if (btn.action === 'education') {
+                sendMessage(`Tell me about ${btn.topic || 'health'}`);
+            }
+        }
+
+        // ── Event Listeners ───────────────────────────────────────────────
+        micBtn.addEventListener('click', () => {
+            STATE.isListening ? stopListening() : startListening();
+        });
+
+        toggleTextBtn.addEventListener('click', () => {
+            const visible = textInputRow.style.display !== 'none';
+            textInputRow.style.display = visible ? 'none' : 'flex';
+            if (!visible) textInput.focus();
+        });
+
+        sendBtn.addEventListener('click', () => {
+            const text = textInput.value.trim();
+            if (text) { sendMessage(text); textInput.value = ''; }
+        });
+
+        textInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendBtn.click();
+        });
+
+        stopAudioBtn.addEventListener('click', () => {
+            stopAudio();
+            setVoiceStatus('Tap the mic to continue', '');
+            updateMicState();
+        });
+
+        // ── SOS Emergency System ───────────────────────────────────────────
+        const sosBtn = document.getElementById('sosBtn');
+        const sosOverlay = document.getElementById('sosOverlay');
+        const sosClose = document.getElementById('sosClose');
+        const sosLocation = document.getElementById('sosLocation');
+        const nearbySection = document.getElementById('nearbySection');
+        const nearbyServices = document.getElementById('nearbyServices');
+        const trustedContacts = document.getElementById('trustedContacts');
+        const addContactBtn = document.getElementById('addContactBtn');
+
+        let userLocation = null;
+        let savedContacts = [];
+
+        sosBtn.addEventListener('click', () => openSOS());
+        sosClose.addEventListener('click', () => closeSOS());
+
+        sosOverlay.addEventListener('click', (e) => {
+            if (e.target === sosOverlay) closeSOS();
+        });
+
+        function openSOS() {
+            sosOverlay.classList.add('open');
+            detectLocation();
+            loadContacts();
+        }
+
+        function closeSOS() {
+            sosOverlay.classList.remove('open');
+        }
+
+        async function detectLocation() {
+            sosLocation.innerHTML = '<div class="loc-dot"></div><span>Detecting location…</span>';
+
+            if (!navigator.geolocation) {
+                sosLocation.innerHTML = '<span>📍 Location unavailable</span>';
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                async (pos) => {
+                    userLocation = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+                    sosLocation.innerHTML = `<div class="loc-dot"></div><span>📍 Location detected (${userLocation.lat.toFixed(4)}, ${userLocation.lon.toFixed(4)})</span>`;
+                    await triggerSOSBackend();
+                },
+                () => {
+                    sosLocation.innerHTML = '<span>📍 Location not available — helplines still work</span>';
+                }
+            );
+        }
+
+        async function triggerSOSBackend() {
+            try {
+                const res = await fetch('/api/emergency/sos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-session-id': STATE.sessionId,
+                    },
+                    body: JSON.stringify(userLocation || {}),
+                });
+
+                if (!res.ok) return;
+                const data = await res.json();
+
+                // Show nearby services
+                const services = [];
+                if (data.nearest_police) services.push({ icon: '🚔', label: 'Police Station', item: data.nearest_police });
+                if (data.nearest_hospital) services.push({ icon: '🏥', label: 'Hospital', item: data.nearest_hospital });
+                if (data.nearest_ngo) services.push({ icon: '🏛️', label: 'NGO / Support', item: data.nearest_ngo });
+                if (data.nearest_shelter) services.push({ icon: '🏠', label: 'Shelter', item: data.nearest_shelter });
+
+                if (services.length > 0) {
+                    nearbySection.style.display = 'block';
+                    nearbyServices.innerHTML = services.map(s =>
+                        `<div class="contact-item">
+                            <div class="contact-info">
+                                <span class="contact-name">${s.icon} ${s.item.name || s.label}</span>
+                                <span class="contact-phone">${s.item.address || s.item.vicinity || ''}</span>
+                            </div>
+                        </div>`
+                    ).join('');
+                }
+
+                // Load contacts from SOS response
+                if (data.emergency_contacts?.length > 0) {
+                    savedContacts = data.emergency_contacts;
+                    renderContacts();
+                }
+            } catch (e) {
+                console.error('[SOS] Backend error:', e);
+            }
+        }
+
+        // ── Trusted Contacts ──────────────────────────────────────────────
+        async function loadContacts() {
+            try {
+                const res = await fetch('/api/emergency/contacts', {
+                    headers: { 'x-session-id': STATE.sessionId },
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+                savedContacts = data.contacts || [];
+                renderContacts();
+            } catch (e) {
+                console.error('[Contacts] Load error:', e);
+            }
+        }
+
+        async function saveContacts(newContacts) {
+            try {
+                const res = await fetch('/api/emergency/contacts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-session-id': STATE.sessionId,
+                    },
+                    body: JSON.stringify({ contacts: newContacts }),
+                });
+                if (!res.ok) throw new Error('Save failed');
+                const data = await res.json();
+                savedContacts = data.contacts || newContacts;
+                renderContacts();
+            } catch (e) {
+                console.error('[Contacts] Save error:', e);
+            }
+        }
+
+        function renderContacts() {
+            if (savedContacts.length === 0) {
+                trustedContacts.innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:8px 0;">No contacts added yet. Add a trusted contact below.</div>';
+                return;
+            }
+
+            trustedContacts.innerHTML = savedContacts.map((c, i) =>
+                `<div class="contact-item">
+                    <div class="contact-info">
+                        <span class="contact-name">${c.name}</span>
+                        <span class="contact-phone">${c.phone}</span>
+                        ${c.relationship ? `<span class="contact-rel">${c.relationship}</span>` : ''}
+                    </div>
+                    <div class="contact-actions">
+                        <button class="contact-call-btn" title="Call" onclick="window.open('tel:${c.phone}','_self')">📞</button>
+                        <button class="contact-del-btn" title="Remove" onclick="removeContact(${i})">✕</button>
+                    </div>
+                </div>`
+            ).join('');
+        }
+
+        addContactBtn.addEventListener('click', () => {
+            const name = document.getElementById('contactName').value.trim();
+            const phone = document.getElementById('contactPhone').value.trim();
+            const relationship = document.getElementById('contactRelation').value.trim();
+
+            if (!name || !phone) return;
+
+            const updated = [...savedContacts, { name, phone, relationship: relationship || undefined, isPrimary: savedContacts.length === 0 }];
+            saveContacts(updated);
+
+            document.getElementById('contactName').value = '';
+            document.getElementById('contactPhone').value = '';
+            document.getElementById('contactRelation').value = '';
+        });
+
+        window.removeContact = function (index) {
+            const updated = savedContacts.filter((_, i) => i !== index);
+            saveContacts(updated);
+        };
+
+        // ── Init ──────────────────────────────────────────────────────────
+        initSpeechRecognition();
+        connectWebSocket();
+        renderContacts();
+    </script>
+</body>
+
+</html>
